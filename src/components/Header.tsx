@@ -28,20 +28,34 @@ export default function Header({ onOpenContact }: HeaderProps) {
     };
   }, []);
 
-  // Bloquear scroll do body quando menu abre
+  const scrollPositionRef = useRef(0);
+
+  // Bloquear scroll do body quando menu abre — preservando a posição de rolagem
+  // IMPORTANTE: a posição fica guardada num ref (não em document.body.style.top),
+  // porque a cleanup deste mesmo efeito roda ANTES do branch de fechamento
+  // (troca de true -> false), e já zera o style.top — se lêssemos de lá,
+  // o valor sempre chegaria vazio e o scroll nunca seria restaurado.
   useEffect(() => {
     if (mobileMenuOpen) {
-      document.body.style.overflow = "hidden";
+      scrollPositionRef.current = window.scrollY;
       document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollPositionRef.current}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
       document.body.style.width = "100%";
     } else {
-      document.body.style.overflow = "";
       document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
       document.body.style.width = "";
+      window.scrollTo(0, scrollPositionRef.current);
     }
     return () => {
-      document.body.style.overflow = "";
       document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
       document.body.style.width = "";
     };
   }, [mobileMenuOpen]);
@@ -192,16 +206,19 @@ export default function Header({ onOpenContact }: HeaderProps) {
         </button>
       </div>
 
-      {/* Mobile Drawer - Com animação suave */}
+      {/* Mobile Drawer - Abre instantâneo (sem flash da imagem por trás), fecha com fade suave */}
       <div
         ref={menuRef}
         className={`
           md:hidden fixed inset-0 bg-black/95 backdrop-blur-md z-40
-          transition-all duration-300 ease-in-out
-          ${mobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}
+          ease-in-out
+          ${mobileMenuOpen 
+            ? 'opacity-100 visible pointer-events-auto duration-[0ms]' 
+            : 'opacity-0 invisible pointer-events-none duration-300'}
         `}
         style={{
           top: isScrolled ? '60px' : '72px',
+          transitionProperty: 'opacity, visibility',
         }}
       >
         <div className={`
