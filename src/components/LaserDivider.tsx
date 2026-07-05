@@ -1,9 +1,13 @@
-import React from "react";
+import React, { memo } from "react";
 
-export default function LaserDivider() {
+const LaserDivider = memo(() => {
   return (
-    <div className="relative h-px bg-line mx-auto max-w-[1240px] overflow-hidden" aria-hidden="true">
-      <div className="absolute top-0 left-0 h-px w-[120px] bg-gradient-to-r from-transparent via-red-bright to-transparent animate-travel" />
+    <div className="relative h-px bg-white/10 mx-auto max-w-[1240px] overflow-hidden" aria-hidden="true">
+      <div className="absolute top-0 left-0 h-px w-[120px] bg-gradient-to-r from-transparent via-red-400 to-transparent animate-travel" />
     </div>
   );
-}
+});
+
+LaserDivider.displayName = 'LaserDivider';
+
+export default LaserDivider;

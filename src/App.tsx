@@ -6,26 +6,31 @@
 import React, { useState, useCallback, lazy, Suspense } from "react";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
-import Terminal from "./components/Terminal";
-import Services from "./components/Services";
-import Process from "./components/Process";
-import Pricing from "./components/Pricing";
-import FAQ from "./components/FAQ";
-import Footer from "./components/Footer";
 import LaserField from "./components/LaserField";
 import LaserDivider from "./components/LaserDivider";
 import WhatsAppFloat from "./components/WhatsAppFloat";
 import ContactModal from "./components/ContactModal";
 
-// Lazy loading para componentes pesados (opcional)
-// const ContactModal = lazy(() => import("./components/ContactModal"));
+// Lazy loading para componentes pesados
+const Terminal = lazy(() => import("./components/Terminal"));
+const Services = lazy(() => import("./components/Services"));
+const Process = lazy(() => import("./components/Process"));
+const Pricing = lazy(() => import("./components/Pricing"));
+const FAQ = lazy(() => import("./components/FAQ"));
+const Footer = lazy(() => import("./components/Footer"));
+
+// Componente de fallback
+const Loader = () => (
+  <div className="min-h-[200px] flex items-center justify-center">
+    <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 export default function App() {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // NOVO: estado do menu mobile
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Memoizar callbacks para evitar re-renders desnecessários
   const handleOpenContactWithPlan = useCallback((planName: string) => {
     setSelectedPlan(planName);
     setIsContactOpen(true);
@@ -38,64 +43,61 @@ export default function App() {
 
   const handleCloseContact = useCallback(() => {
     setIsContactOpen(false);
-    // Pequeno delay para limpar o estado após o fechamento da modal
     setTimeout(() => setSelectedPlan(null), 300);
   }, []);
 
-  // NOVO: Callback para receber o estado do menu do Header
   const handleMenuToggle = useCallback((isOpen: boolean) => {
     setIsMenuOpen(isOpen);
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-bg-dark text-ink font-sans selection:bg-red-brand selection:text-ink antialiased overflow-x-hidden">
-      {/* Background Animated Laser Field */}
+    <div className="relative min-h-screen bg-[#0a0a0a] text-white font-sans selection:bg-red-500 selection:text-white antialiased overflow-x-hidden">
       <LaserField />
 
-      {/* Floating Navbar Overlaying Hero */}
       <Header 
         onOpenContact={handleOpenGeneralContact}
-        onMenuToggle={handleMenuToggle} // NOVO: passando o callback
+        onMenuToggle={handleMenuToggle}
       />
 
-      {/* Hero Section with Full Screen Background Image */}
       <Hero onOpenContact={handleOpenGeneralContact} />
 
-      {/* Laser-guided divider pulse */}
       <LaserDivider />
 
-      {/* Interactive Typewriter Live Terminal Section */}
-      <Terminal />
-
-      <LaserDivider />
-
-      {/* Services Section */}
-      <Services />
+      <Suspense fallback={<Loader />}>
+        <Terminal />
+      </Suspense>
 
       <LaserDivider />
 
-      {/* Development Process step-by-step Timeline */}
-      <Process />
+      <Suspense fallback={<Loader />}>
+        <Services />
+      </Suspense>
 
       <LaserDivider />
 
+      <Suspense fallback={<Loader />}>
+        <Process />
+      </Suspense>
+
+      <LaserDivider />
       <LaserDivider />
 
-      {/* Pricing and quotations cards */}
-      <Pricing onSelectPlan={handleOpenContactWithPlan} />
+      <Suspense fallback={<Loader />}>
+        <Pricing onSelectPlan={handleOpenContactWithPlan} />
+      </Suspense>
 
       <LaserDivider />
 
-      {/* Accordion FAQ Section */}
-      <FAQ />
+      <Suspense fallback={<Loader />}>
+        <FAQ />
+      </Suspense>
 
-      {/* Final Call to Action and Footer */}
-      <Footer onOpenContact={handleOpenGeneralContact} />
+      <Suspense fallback={<Loader />}>
+        <Footer onOpenContact={handleOpenGeneralContact} />
+      </Suspense>
 
-      {/* Pulsing Quick WhatsApp Float Trigger - AGORA COM CONTROLE */}
       <WhatsAppFloat isMenuOpen={isMenuOpen} />
 
-      {/* Contact Form Popup Modal */}
       <ContactModal 
         isOpen={isContactOpen} 
         onClose={handleCloseContact}

@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo, useCallback } from "react";
 import { X, Check, ArrowRight } from "lucide-react";
 
 interface ContactModalProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedPlan?: string | null; // Adicionando a prop opcional
+  selectedPlan?: string | null;
 }
 
-export default function ContactModal({ isOpen, onClose, selectedPlan }: ContactModalProps) {
+const ContactModal = memo(({ isOpen, onClose, selectedPlan }: ContactModalProps) => {
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
@@ -17,7 +17,6 @@ export default function ContactModal({ isOpen, onClose, selectedPlan }: ContactM
   });
   const [submitted, setSubmitted] = useState(false);
 
-  // Resetar formulário quando o modal abrir com um plano selecionado
   useEffect(() => {
     if (isOpen && selectedPlan) {
       setFormData(prev => ({
@@ -27,14 +26,11 @@ export default function ContactModal({ isOpen, onClose, selectedPlan }: ContactM
     }
   }, [isOpen, selectedPlan]);
 
-  if (!isOpen) return null;
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
     
     setTimeout(() => {
-      // Criar mensagem pré-preenchida com informações do plano se disponível
       let text = `Olá Geovani! Solicitei um orçamento através do site:\n\n`;
       text += `*Nome:* ${formData.nome}\n`;
       text += `*E-mail:* ${formData.email}\n`;
@@ -48,7 +44,7 @@ export default function ContactModal({ isOpen, onClose, selectedPlan }: ContactM
       text += `*Detalhes:* ${formData.detalhes}`;
       
       const encodedText = encodeURIComponent(text);
-      const whatsappUrl = `https://wa.me/5541997552818?text=${encodedText}`; // Número do Geovani
+      const whatsappUrl = `https://wa.me/5541997552818?text=${encodedText}`;
       window.open(whatsappUrl, "_blank");
       
       onClose();
@@ -61,7 +57,14 @@ export default function ContactModal({ isOpen, onClose, selectedPlan }: ContactM
         detalhes: "",
       });
     }, 1500);
-  };
+  }, [formData, selectedPlan, onClose]);
+
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  }, []);
+
+  if (!isOpen) return null;
 
   return (
     <div 
@@ -72,7 +75,6 @@ export default function ContactModal({ isOpen, onClose, selectedPlan }: ContactM
         className="relative w-full max-w-lg bg-[#0a0a0a] border border-white/10 rounded-xl overflow-hidden shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Border glow */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 to-red-400" />
 
         <div className="p-6 sm:p-8">
@@ -114,11 +116,12 @@ export default function ContactModal({ isOpen, onClose, selectedPlan }: ContactM
                 </label>
                 <input
                   type="text"
+                  name="nome"
                   required
                   placeholder="Ex: João Silva"
                   className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 text-sm"
                   value={formData.nome}
-                  onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                  onChange={handleInputChange}
                 />
               </div>
 
@@ -129,11 +132,12 @@ export default function ContactModal({ isOpen, onClose, selectedPlan }: ContactM
                   </label>
                   <input
                     type="email"
+                    name="email"
                     required
                     placeholder="joao@empresa.com"
                     className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 text-sm"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onChange={handleInputChange}
                   />
                 </div>
                 <div>
@@ -142,11 +146,12 @@ export default function ContactModal({ isOpen, onClose, selectedPlan }: ContactM
                   </label>
                   <input
                     type="tel"
+                    name="whatsapp"
                     required
                     placeholder="(41) 99999-9999"
                     className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 text-sm"
                     value={formData.whatsapp}
-                    onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+                    onChange={handleInputChange}
                   />
                 </div>
               </div>
@@ -156,9 +161,10 @@ export default function ContactModal({ isOpen, onClose, selectedPlan }: ContactM
                   Tipo de Projeto
                 </label>
                 <select
+                  name="tipoProjeto"
                   className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-red-500 text-sm cursor-pointer"
                   value={formData.tipoProjeto}
-                  onChange={(e) => setFormData({ ...formData, tipoProjeto: e.target.value })}
+                  onChange={handleInputChange}
                 >
                   <option value="landing-page">Landing Page Premium</option>
                   <option value="site-institucional">Site Institucional Completo</option>
@@ -172,12 +178,13 @@ export default function ContactModal({ isOpen, onClose, selectedPlan }: ContactM
                   Conte um pouco sobre o projeto *
                 </label>
                 <textarea
+                  name="detalhes"
                   rows={3}
                   required
                   placeholder="Qual é o seu negócio e qual o principal objetivo deste projeto?"
                   className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 text-sm resize-none"
                   value={formData.detalhes}
-                  onChange={(e) => setFormData({ ...formData, detalhes: e.target.value })}
+                  onChange={handleInputChange}
                 />
               </div>
 
@@ -196,4 +203,8 @@ export default function ContactModal({ isOpen, onClose, selectedPlan }: ContactM
       </div>
     </div>
   );
-}
+});
+
+ContactModal.displayName = 'ContactModal';
+
+export default ContactModal;

@@ -19,36 +19,189 @@
 }
 
 @layer base {
+  /* Reset e otimizações base */
+  *,
+  *::before,
+  *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   body {
     background-color: var(--color-bg-dark);
     color: var(--color-ink);
     font-family: var(--font-sans);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-display: swap;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* Otimização de renderização para todos os elementos */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Seleção de texto */
+  ::selection {
+    background-color: var(--color-red-brand);
+    color: var(--color-ink);
+  }
+
+  ::-moz-selection {
+    background-color: var(--color-red-brand);
+    color: var(--color-ink);
+  }
+
+  /* Otimização de imagens */
+  img {
+    content-visibility: auto;
+    background-color: var(--color-bg-dark);
+    font-style: italic;
+    shape-rendering: auto;
+  }
+
+  /* Otimização de vídeos */
+  video {
+    content-visibility: auto;
+  }
+
+  /* Otimização de seções fora da viewport */
+  section {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 500px;
+  }
+
+  /* Otimização de containers com backdrop */
+  .backdrop-blur-sm,
+  .backdrop-blur-md,
+  .backdrop-blur-lg {
+    will-change: transform, filter;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+
+  /* Otimização de transições */
+  .transition-all,
+  .transition-transform,
+  .transition-opacity,
+  .transition-colors {
+    will-change: transform, opacity, color;
+  }
+
+  /* Otimização de hover states com GPU */
+  .hover\:scale-\[0\.98\]:active {
+    transform: scale(0.98);
+    will-change: transform;
+  }
+
+  /* Otimização de animações com GPU */
+  .animate-laser,
+  .animate-float-pulse,
+  .animate-blink,
+  .animate-spin,
+  .animate-pulse,
+  .animate-bounce,
+  .animate-ping {
+    will-change: transform, opacity;
+  }
+
+  /* Otimização de elementos fixos */
+  .fixed {
+    will-change: transform;
+  }
+
+  /* Otimização de scroll suave para elementos com overflow */
+  .overflow-auto,
+  .overflow-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
   }
 }
 
-/* Custom keyframes and animations */
+/* Custom keyframes e animações */
 @keyframes laserPulse {
-  0%, 100% { opacity: 0.15; }
-  50% { opacity: 0.45; }
+  0%, 100% { 
+    opacity: 0.15; 
+  }
+  50% { 
+    opacity: 0.45; 
+  }
 }
 
 @keyframes travel {
-  0% { left: -10%; }
-  100% { left: 110%; }
+  0% { 
+    left: -10%; 
+  }
+  100% { 
+    left: 110%; 
+  }
 }
 
 @keyframes floatPulse {
-  0%, 100% { box-shadow: 0 10px 30px -8px rgba(232,35,42,0.7); }
-  50% { box-shadow: 0 10px 40px -4px rgba(232,35,42,0.9); }
+  0%, 100% { 
+    box-shadow: 0 10px 30px -8px rgba(232,35,42,0.7); 
+  }
+  50% { 
+    box-shadow: 0 10px 40px -4px rgba(232,35,42,0.9); 
+  }
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.25; }
+  0%, 100% { 
+    opacity: 1; 
+  }
+  50% { 
+    opacity: 0.25; 
+  }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Classes de animação utilitárias */
 .animate-laser {
   animation: laserPulse 6s ease-in-out infinite;
 }
@@ -65,13 +218,279 @@
   animation: blink 1.6s ease-in-out infinite;
 }
 
-/* Smooth scroll behavior */
-html {
-  scroll-behavior: smooth;
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
 }
 
-::selection {
-  background-color: var(--color-red-brand);
-  color: var(--color-ink);
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out forwards;
 }
 
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out forwards;
+}
+
+/* Otimização de fontes para melhor performance */
+.font-display {
+  font-family: var(--font-display);
+  font-display: swap;
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+  font-display: swap;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+  font-display: swap;
+}
+
+/* Otimização de loading para fontes */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-display: swap;
+  src: local('Space Grotesk');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-display: swap;
+  src: local('Inter');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-display: swap;
+  src: local('JetBrains Mono');
+}
+
+/* Otimização para elementos com muitos filhos */
+.space-y-2 > * + *,
+.space-y-4 > * + *,
+.space-y-6 > * + * {
+  margin-top: 0.5rem;
+}
+
+/* Otimização para grids */
+.grid {
+  contain: layout style;
+}
+
+/* Otimização para flex containers */
+.flex {
+  contain: layout style;
+}
+
+/* Otimização para elementos com overflow hidden */
+.overflow-hidden {
+  contain: paint layout;
+}
+
+/* Otimização para elementos com posição absoluta/fixa */
+.absolute,
+.fixed {
+  contain: paint layout;
+}
+
+/* Otimização para elementos com backdrop */
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.backdrop-blur-md {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.backdrop-blur-lg {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.backdrop-blur-xl {
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* Otimização para botões e elementos interativos */
+button,
+a,
+[role="button"] {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Otimização para inputs */
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: 16px; /* Previne zoom automático em iOS */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Otimização para scrollbars (opcional) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-line);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-red-brand);
+}
+
+/* Otimização de performance para animações em elementos com position */
+.wa-float {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Otimização para elementos com backdrop-filter */
+.fixed.inset-0.bg-black\/80 {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  will-change: transform, opacity;
+}
+
+/* Otimização para modais */
+.z-\[200\] {
+  will-change: transform, opacity;
+}
+
+/* Otimização para elementos com transition */
+* {
+  transition-behavior: allow-discrete;
+}
+
+/* Media queries para reduzir animações em dispositivos com preferência por reduzir movimento */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-laser,
+  .animate-float-pulse,
+  .animate-blink,
+  .animate-travel {
+    animation: none !important;
+  }
+
+  html {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Otimização para impressão */
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Otimização para dark mode (já que é dark por padrão) */
+@media (prefers-color-scheme: light) {
+  /* Mantém o dark mode pois é o design do site */
+  body {
+    background-color: var(--color-bg-dark);
+    color: var(--color-ink);
+  }
+}
+
+/* Otimização de acessibilidade */
+:focus-visible {
+  outline: 2px solid var(--color-red-brand);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Otimização para elementos com texto longo */
+.break-words {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Otimização para elementos com conteúdo dinâmico */
+.contain-layout {
+  contain: layout;
+}
+
+.contain-paint {
+  contain: paint;
+}
+
+.contain-style {
+  contain: style;
+}
+
+/* Otimização para elementos com imagens de fundo */
+.bg-cover,
+.bg-contain {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Otimização para elementos com shadow */
+.shadow-lg,
+.shadow-xl,
+.shadow-2xl {
+  will-change: box-shadow, transform;
+}
+
+/* Otimização para elementos com gradient */
+.bg-gradient-to-r,
+.bg-gradient-to-t,
+.bg-gradient-to-b {
+  will-change: transform;
+}
+
+/* Otimização para elementos com opacity */
+.opacity-0,
+.opacity-100 {
+  will-change: opacity;
+}
+
+/* Otimização para elementos com transform */
+.translate-x-0,
+.translate-x-full,
+.translate-x-8,
+.scale-90,
+.scale-100 {
+  will-change: transform;
+}
+
+/* Otimização para elementos com filter */
+.filter,
+.backdrop-filter {
+  will-change: filter, transform;
+}

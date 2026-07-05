@@ -1,16 +1,16 @@
-import React from "react";
+import React, { useCallback, memo } from "react";
 
 interface WhatsAppFloatProps {
   isMenuOpen?: boolean;
 }
 
-export default function WhatsAppFloat({ isMenuOpen = false }: WhatsAppFloatProps) {
-  const handleWA = () => {
+const WhatsAppFloat = memo(({ isMenuOpen = false }: WhatsAppFloatProps) => {
+  const handleWA = useCallback(() => {
     const text = "Olá Geovani! Vi seu portfólio e gostaria de solicitar um orçamento para o meu projeto.";
     const encodedText = encodeURIComponent(text);
     const whatsappUrl = `https://wa.me/5541997552818?text=${encodedText}`;
     window.open(whatsappUrl, "_blank");
-  };
+  }, []);
 
   return (
     <button 
@@ -32,4 +32,8 @@ export default function WhatsAppFloat({ isMenuOpen = false }: WhatsAppFloatProps
       </span>
     </button>
   );
-}
+});
+
+WhatsAppFloat.displayName = 'WhatsAppFloat';
+
+export default WhatsAppFloat;

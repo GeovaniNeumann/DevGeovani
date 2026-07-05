@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Menu, X } from "lucide-react";
 
 export interface HeaderProps {
   onOpenContact: () => void;
-  onMenuToggle?: (isOpen: boolean) => void; // NOVO: callback para o estado do menu
+  onMenuToggle?: (isOpen: boolean) => void;
 }
 
 export default function Header({ onOpenContact, onMenuToggle }: HeaderProps) {
@@ -12,23 +12,20 @@ export default function Header({ onOpenContact, onMenuToggle }: HeaderProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   
-  // Menu items
-  const menuItems = [
+  const menuItems = useMemo(() => [
     { href: "#sobre", label: "Sobre" },
     { href: "#servicos", label: "Serviços" },
     { href: "#processo", label: "Processo" },
     { href: "#precos", label: "Investimento" },
     { href: "#faq", label: "FAQ" }
-  ];
+  ], []);
 
-  // NOVO: Notificar o pai quando o menu mudar
   useEffect(() => {
     if (onMenuToggle) {
       onMenuToggle(isOpen);
     }
   }, [isOpen, onMenuToggle]);
 
-  // Detectar scroll para mudar fundo do header
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | undefined;
     const handleScroll = () => {
@@ -45,7 +42,6 @@ export default function Header({ onOpenContact, onMenuToggle }: HeaderProps) {
     };
   }, []);
 
-  // Controlar scroll do body quando menu abre/fecha
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -63,7 +59,6 @@ export default function Header({ onOpenContact, onMenuToggle }: HeaderProps) {
     };
   }, [isOpen]);
 
-  // Fechar menu ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -81,7 +76,6 @@ export default function Header({ onOpenContact, onMenuToggle }: HeaderProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
-  // Fechar menu com ESC
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === "Escape" && isOpen) {
@@ -92,14 +86,12 @@ export default function Header({ onOpenContact, onMenuToggle }: HeaderProps) {
     return () => document.removeEventListener("keydown", handleEsc);
   }, [isOpen]);
 
-  // Função do WhatsApp
   const handleWhatsApp = useCallback(() => {
     const text = "Olá Geovani! Vim pelo site e gostaria de solicitar um orçamento para o meu projeto.";
     const url = `https://wa.me/5541997552818?text=${encodeURIComponent(text)}`;
     window.open(url, "_blank");
   }, []);
 
-  // Funções do menu
   const toggleMenu = useCallback(() => {
     setIsOpen(prev => !prev);
   }, []);
@@ -125,7 +117,6 @@ export default function Header({ onOpenContact, onMenuToggle }: HeaderProps) {
     }, 150);
   }, [closeMenu]);
 
-  // Função do botão "Fale comigo" no mobile
   const handleMobileContact = useCallback(() => {
     closeMenu();
     handleWhatsApp();
@@ -133,7 +124,6 @@ export default function Header({ onOpenContact, onMenuToggle }: HeaderProps) {
 
   return (
     <>
-      {/* Header */}
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled 
@@ -142,7 +132,6 @@ export default function Header({ onOpenContact, onMenuToggle }: HeaderProps) {
         }`}
       >
         <div className="max-w-[1240px] mx-auto px-4 sm:px-8 flex items-center justify-between">
-          {/* Logo */}
           <a
             href="#top"
             className="font-bold text-lg text-white flex items-center gap-2 hover:text-red-400 transition-colors flex-shrink-0"
@@ -157,7 +146,6 @@ export default function Header({ onOpenContact, onMenuToggle }: HeaderProps) {
             <span className="xs:hidden">Geovani Neumann</span>
           </a>
 
-          {/* Desktop Menu */}
           <nav className="hidden md:flex items-center gap-8">
             {menuItems.map((item) => (
               <a
@@ -172,7 +160,6 @@ export default function Header({ onOpenContact, onMenuToggle }: HeaderProps) {
             ))}
           </nav>
 
-          {/* Desktop CTA - WhatsApp */}
           <button
             onClick={handleWhatsApp}
             className="hidden md:flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:shadow-lg hover:shadow-red-500/30"
@@ -183,7 +170,6 @@ export default function Header({ onOpenContact, onMenuToggle }: HeaderProps) {
             ORÇAMENTO
           </button>
 
-          {/* Mobile Menu Button */}
           <button
             ref={buttonRef}
             onClick={toggleMenu}
@@ -196,7 +182,6 @@ export default function Header({ onOpenContact, onMenuToggle }: HeaderProps) {
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
       <div
         className={`
           fixed inset-0 z-40 bg-black/80 backdrop-blur-sm
@@ -206,7 +191,6 @@ export default function Header({ onOpenContact, onMenuToggle }: HeaderProps) {
         onClick={closeMenu}
       />
 
-      {/* Mobile Menu Drawer */}
       <div
         ref={menuRef}
         className={`
@@ -221,7 +205,6 @@ export default function Header({ onOpenContact, onMenuToggle }: HeaderProps) {
         }}
       >
         <div className="h-full px-6 py-8 flex flex-col">
-          {/* Menu Items */}
           <nav className="flex-1 space-y-2">
             {menuItems.map((item, index) => (
               <a
@@ -241,7 +224,6 @@ export default function Header({ onOpenContact, onMenuToggle }: HeaderProps) {
             ))}
           </nav>
 
-          {/* Footer com WhatsApp direto */}
           <div className="border-t border-white/10 pt-6 space-y-4">
             <p className="text-xs text-gray-400 text-center">
               Vamos conversar?
