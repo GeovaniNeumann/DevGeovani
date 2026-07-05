@@ -23,6 +23,7 @@ import ContactModal from "./components/ContactModal";
 export default function App() {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // NOVO: estado do menu mobile
 
   // Memoizar callbacks para evitar re-renders desnecessários
   const handleOpenContactWithPlan = useCallback((planName: string) => {
@@ -41,13 +42,21 @@ export default function App() {
     setTimeout(() => setSelectedPlan(null), 300);
   }, []);
 
+  // NOVO: Callback para receber o estado do menu do Header
+  const handleMenuToggle = useCallback((isOpen: boolean) => {
+    setIsMenuOpen(isOpen);
+  }, []);
+
   return (
     <div className="relative min-h-screen bg-bg-dark text-ink font-sans selection:bg-red-brand selection:text-ink antialiased overflow-x-hidden">
       {/* Background Animated Laser Field */}
       <LaserField />
 
       {/* Floating Navbar Overlaying Hero */}
-      <Header onOpenContact={handleOpenGeneralContact} />
+      <Header 
+        onOpenContact={handleOpenGeneralContact}
+        onMenuToggle={handleMenuToggle} // NOVO: passando o callback
+      />
 
       {/* Hero Section with Full Screen Background Image */}
       <Hero onOpenContact={handleOpenGeneralContact} />
@@ -83,8 +92,8 @@ export default function App() {
       {/* Final Call to Action and Footer */}
       <Footer onOpenContact={handleOpenGeneralContact} />
 
-      {/* Pulsing Quick WhatsApp Float Trigger */}
-      <WhatsAppFloat />
+      {/* Pulsing Quick WhatsApp Float Trigger - AGORA COM CONTROLE */}
+      <WhatsAppFloat isMenuOpen={isMenuOpen} />
 
       {/* Contact Form Popup Modal */}
       <ContactModal 
